@@ -10,7 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.owm.recyclerfastadapterlib.FastAdapter;
 import com.owm.recyclerviewswipelib.RecyclerViewSwipeTouch;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  *
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FastAdapter.OnItemClickListener, FastAdapter.OnItemLongClickListener, FastAdapter.OnItemChildClickListener {
 
     private RecyclerViewSwipeTouch swipeTouch;
     private RecyclerView rv_content;
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     private void refreshUI() {
         if (adapter == null) {
             adapter = new NumAdapter(data);
+            adapter.setOnItemClickListener(this);
+            adapter.setOnItemLongClickListener(this);
+            adapter.setOnItemChildClickListener(this);
             rv_content.setLayoutManager(new LinearLayoutManager(this));
             rv_content.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
             rv_content.setAdapter(adapter);
@@ -91,5 +96,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(FastAdapter<?> adapter, View itemView, int position) {
+        Toast.makeText(this, "position:"+position, 0).show();
+    }
+
+    @Override
+    public boolean onItemLongClick(FastAdapter<?> adapter, View itemView, int position) {
+        Toast.makeText(this, "long position:"+position, 0).show();
+        return true;
+    }
+
+    @Override
+    public void onItemChildClick(FastAdapter<?> adapter, View itemView, View childView, int position) {
+        Toast.makeText(this, "child position:"+position, 0).show();
     }
 }

@@ -12,9 +12,10 @@ import android.widget.TextView;
  * Created by owm on 2017/7/27.
  */
 
-public class FastViewHolder extends RecyclerView.ViewHolder {
+public class FastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     private SparseArray<View> views;
+    private FastAdapter<?> adapter;
 
     protected FastViewHolder(View itemView) {
         super(itemView);
@@ -40,4 +41,39 @@ public class FastViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    public void addOnClickListener(@IdRes int viewId) {
+        getView(viewId).setOnClickListener(this);
+    }
+
+    public void removeOnClickListener(@IdRes int viewId) {
+        getView(viewId).setOnClickListener(null);
+    }
+
+    public void addOnLongClickListener(@IdRes int viewId) {
+        getView(viewId).setOnLongClickListener(this);
+    }
+
+    public void removeOnLongClickListener(@IdRes int viewId) {
+        getView(viewId).setOnLongClickListener(null);
+    }
+
+    public FastAdapter<?> getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(FastAdapter<?> adapter) {
+        this.adapter = adapter;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (adapter != null && adapter.getOnItemChildClickListener() != null) {
+            adapter.getOnItemChildClickListener().onItemChildClick(adapter, itemView, v, getAdapterPosition());
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        return adapter != null && adapter.getOnItemChildLongClickListener() != null && adapter.getOnItemChildLongClickListener().onItemChildLongClick(adapter, itemView, v, getAdapterPosition());
+    }
 }

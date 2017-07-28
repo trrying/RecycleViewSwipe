@@ -18,7 +18,8 @@ public class NumAdapter extends FastAdapter<String> {
 
     @Override
     public void convert(FastViewHolder holder, String item) {
-        holder.setText(R.id.tv_number, item);
+        holder.setText(R.id.tv_number, item)
+            .addOnClickListener(R.id.tv_number);
     }
 
 }
