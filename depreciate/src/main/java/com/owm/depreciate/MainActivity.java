@@ -73,32 +73,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    /** 网页标题tag **/
-    private static final String pageTitleTag = "title";
-    /** 价格tag **/
-    private static final String priceTag = "span.mui-price-integer";
-    /** 价格tag **/
-    private static final String priceOriginTag = "del.price-origin";
-    /** 商品标题tag **/
-    private static final String nameTag = "div.main";
-    /** 邮费tag **/
-    private static final String postageTag = "div.postage.cell";
-    /** 月销量tag **/
-    private static final String salesCellTag = "div.sales.cell";
-    /** 发货点tag **/
-    private static final String deliveryCellTag = "div.delivery.cell";
-    /** 所属商店名称tag **/
-    private static final String tagShopName = "div.shop-t";
-    /** 所属商店log tag **/
-    private static final String tagShopLogo = "div.shop-logo.cell";
-
-    private static final String tagShowcase = "section.s-showcase";
-    private static final String tagScroller = "div.scroller";
-
-
     public void parseHtml(String urlStr) {
         try {
-            Document document = Jsoup.connect(urlStr).get();
+            Document document = Jsoup.connect(urlStr)
+                    .header("Accept-Encoding", "gzip, deflate")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0")
+                    .maxBodySize(0)
+                    .timeout(600000)
+                    .get();
             parse(urlStr, document);
         } catch (Exception e) {
             e.printStackTrace();
@@ -317,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return !(url.contains("http") || url.contains("https") || url.startsWith("tel"));
+                return url.contains("login");
             }
 
             @Override
