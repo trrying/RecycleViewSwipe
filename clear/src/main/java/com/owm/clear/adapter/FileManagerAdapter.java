@@ -1,7 +1,5 @@
 package com.owm.clear.adapter;
 
-import android.view.View;
-
 import com.owm.clear.R;
 import com.owm.clear.util.FileUtils;
 import com.owm.recyclerfastadapterlib.FastAdapter;
@@ -25,11 +23,11 @@ public class FileManagerAdapter extends FastAdapter<File> {
     public void convert(FastViewHolder holder, File item) {
         holder.setText(R.id.tv_file_name, item.getName())
                 .setText(R.id.tv_file_path, item.getParent());
-        if (item.isFile()) {
-            holder.getView(R.id.tv_file_size).setVisibility(View.VISIBLE);
+//        if (item.isFile()) {
+//            holder.getView(R.id.tv_file_size).setVisibility(View.VISIBLE);
             holder.setText(R.id.tv_file_size, "size: "+ FileUtils.getSize(item));
-        } else {
-            holder.getView(R.id.tv_file_size).setVisibility(View.GONE);
-        }
+//        } else {
+//            holder.getView(R.id.tv_file_size).setVisibility(View.GONE);
+//        }
     }
 }

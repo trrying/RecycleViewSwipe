@@ -15,9 +15,9 @@ import java.util.List;
  * Created by owm on 2017/8/1.
  */
 
-public class BigFileAdapter extends FastAdapter<File>{
+public class ClearFileAdapter extends FastAdapter<File>{
 
-    public BigFileAdapter(List<File> data) {
+    public ClearFileAdapter(List<File> data) {
         super(R.layout.item_file_handle, data);
     }
 
@@ -31,6 +31,7 @@ public class BigFileAdapter extends FastAdapter<File>{
         } else {
             holder.getView(R.id.tv_file_size).setVisibility(View.GONE);
         }
+        holder.addOnClickListener(R.id.tv_cut);
     }
 
 }
