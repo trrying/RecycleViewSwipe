@@ -1,8 +1,11 @@
 package com.owm.clear.fragment;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import java.lang.ref.WeakReference;
 
@@ -17,6 +20,11 @@ public class BaseFragment extends Fragment {
 
     public final Handler getHandler() {
         return handler;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     private static class StaticHandler extends Handler {
@@ -39,4 +47,9 @@ public class BaseFragment extends Fragment {
     protected void handleMessage(Message msg) {
 
     }
+
+    public boolean onBackPressed() {
+        return false;
+    }
+
 }

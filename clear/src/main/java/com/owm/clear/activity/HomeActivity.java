@@ -7,17 +7,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.widget.Toast;
 
 import com.owm.clear.R;
 import com.owm.clear.adapter.ViewPagerAdapter;
 import com.owm.clear.fragment.ClearFragment;
+import com.owm.clear.fragment.FileManagerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends BaseActivity {
     private static final int REQUEST_CODE_PERMISSION_READ_STORAGE = 0x1;
 
     private ViewPager vp_content;
@@ -54,8 +57,29 @@ public class HomeActivity extends AppCompatActivity {
     private void init() {
         fragmentList = new ArrayList<>();
         fragmentList.add(new ClearFragment());
+        fragmentList.add(new FileManagerFragment());
         pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
         vp_content.setAdapter(pagerAdapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (shouldExit()) {
+            super.onBackPressed();
+        }
+    }
+
+    private long lastTime;
+    private boolean shouldExit() {
+        boolean result = false;
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastTime < 2000) {
+            result = true;
+        } else {
+            Toast.makeText(this, "click again exit!", 0).show();
+            lastTime = currentTime;
+        }
+        return result;
     }
 
 }

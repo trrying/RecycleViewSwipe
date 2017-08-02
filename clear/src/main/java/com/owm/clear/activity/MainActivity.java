@@ -9,20 +9,21 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.owm.clear.R;
 import com.owm.clear.adapter.ViewPagerAdapter;
 import com.owm.clear.fragment.ClearFragment;
+import com.owm.clear.fragment.FileManagerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ViewPager vp_content;
     private ViewPagerAdapter pagerAdapter;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void init() {
         fragmentList = new ArrayList<>();
         fragmentList.add(new ClearFragment());
+        fragmentList.add(new FileManagerFragment());
         pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
         vp_content.setAdapter(pagerAdapter);
     }
@@ -74,8 +76,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (shouldExit()) {
+                super.onBackPressed();
+            }
         }
+    }
+
+    private long lastTime;
+    private boolean shouldExit() {
+        boolean result = false;
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastTime < 2000) {
+            result = true;
+        } else {
+            Toast.makeText(this, "click again exit!", 0).show();
+            lastTime = currentTime;
+        }
+        return result;
     }
 
     @Override
