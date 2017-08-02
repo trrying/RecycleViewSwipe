@@ -1,20 +1,32 @@
-package com.owm.clear;
+package com.owm.clear.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import com.owm.clear.R;
+import com.owm.clear.adapter.ViewPagerAdapter;
+import com.owm.clear.fragment.ClearFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ViewPager vp_content;
+    private ViewPagerAdapter pagerAdapter;
+    private List<Fragment> fragmentList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,20 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initView();
+        init();
+    }
+
+    private void initView() {
+        vp_content = (ViewPager) findViewById(R.id.vp_content);
+    }
+
+    private void init() {
+        fragmentList = new ArrayList<>();
+        fragmentList.add(new ClearFragment());
+        pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragmentList);
+        vp_content.setAdapter(pagerAdapter);
     }
 
     @Override

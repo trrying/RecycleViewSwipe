@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +22,10 @@ public abstract class FastAdapter<T> extends RecyclerView.Adapter<FastViewHolder
     protected OnItemLongClickListener onItemLongClickListener;
     protected OnItemChildClickListener onItemChildClickListener;
     protected OnItemChildLongClickListener onItemChildLongClickListener;
+
+    public FastAdapter(List<T> data) {
+        this.data = data;
+    }
 
     public FastAdapter(@LayoutRes int layoutResId, List<T> data) {
         this.layoutResId = layoutResId;
