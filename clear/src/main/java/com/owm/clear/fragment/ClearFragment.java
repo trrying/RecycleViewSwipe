@@ -15,14 +15,16 @@ import android.widget.TextView;
 
 import com.owm.clear.R;
 import com.owm.clear.adapter.ClearFileAdapter;
-import com.owm.clear.util.FileUtils;
 import com.owm.recyclerfastadapterlib.FastAdapter;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static com.owm.clear.app.Constans.REFRESH_DIR;
+import static com.owm.clear.app.Constans.REFRESH_LIST;
+import static com.owm.clear.app.Constans.SCAN_START;
+import static com.owm.clear.app.Constans.SCAN_STOP;
 
 /**
  *
@@ -30,13 +32,7 @@ import java.util.List;
  */
 
 public class ClearFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, FastAdapter.OnItemChildClickListener {
-    private static final int MATCH_FILE_SIZE = 1024 * 1024; //50m
-
-    private static final int REFRESH_LIST = 0x1;
-    private static final int REFRESH_DIR = 0x2;
-
-    private static final int SCAN_START = 0x3;
-    private static final int SCAN_STOP = 0x4;
+    private static final int MATCH_FILE_SIZE = 1024 * 1024 * 10; //50m
 
 
     private SwipeRefreshLayout srl_clearFile;
@@ -66,53 +62,7 @@ public class ClearFragment extends BaseFragment implements SwipeRefreshLayout.On
 
     private void initData() {
         scanBigFileThread = new Thread() {
-            @Override
-            public void run() {
-                String innerSDCardPath = FileUtils.getInnerSDCardPath();
-                File file = new File(innerSDCardPath);
-                Message.obtain(getHandler(), SCAN_START).sendToTarget();
-                traverseFolder2(innerSDCardPath);
-                Message.obtain(getHandler(), SCAN_STOP).sendToTarget();
-            }
 
-            public void traverseFolder2(String path) {
-                Message.obtain(getHandler(), REFRESH_DIR, path).sendToTarget();
-                File file = new File(path);
-                if (file.exists()) {
-                    File[] matchFile = file.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File file) {
-                            return file.isFile() && file.length() > MATCH_FILE_SIZE;
-                        }
-                    });
-                    if (matchFile != null && matchFile.length > 0) {
-                        data.addAll(Arrays.asList(matchFile));
-                        getHandler().sendEmptyMessage(REFRESH_LIST);
-                    }
-                    File[] dirFile = file.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File file) {
-                            return file.isDirectory();
-                        }
-                    });
-
-                    if (dirFile.length == 0) {
-                        System.out.println("文件夹是空的!");
-                        return;
-                    } else {
-                        for (File file2 : dirFile) {
-                            if (file2.isDirectory()) {
-                                System.out.println("文件夹:" + file2.getAbsolutePath());
-                                traverseFolder2(file2.getAbsolutePath());
-                            } else {
-                                System.out.println("文件:" + file2.getAbsolutePath());
-                            }
-                        }
-                    }
-                } else {
-                    System.out.println("文件不存在!");
-                }
-            }
         };
         scanBigFileThread.start();
     }
