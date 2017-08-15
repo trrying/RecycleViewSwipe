@@ -3,6 +3,7 @@ package com.owm.clear.util;
 import android.content.Context;
 import android.os.Environment;
 import android.os.storage.StorageManager;
+import android.text.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -194,6 +195,14 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    public static boolean equals(File file1, File file2) {
+        boolean result = false;
+        if (file1 != null && file2 != null) {
+            result = TextUtils.equals(file1.getPath(), file2.getPath());
+        }
+        return result;
     }
 
 }
