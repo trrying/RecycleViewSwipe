@@ -2,7 +2,6 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/gson-2.7.jar')
 }
 
 sourceCompatibility = "1.7"
