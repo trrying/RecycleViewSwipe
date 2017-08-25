@@ -1,5 +1,7 @@
 package com.example.db;
 
+import com.example.util.LogUtils;
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,18 +9,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库工具类
  * Created by owm on 2017/7/1.
  */
 
-public class DbUtil {
+public class DbUtils {
 
-    public static <T> boolean createTable(T t) {
+    public static boolean createTable(Class clazz) {
         try {
-
-            Class clazz = t.getClass();
 
             Class.forName("org.sqlite.JDBC");
             Field[] fields = clazz.getDeclaredFields();
@@ -34,7 +35,6 @@ public class DbUtil {
             builder.append("create table ").append(clazz.getSimpleName()).append(" (");
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
-                fields[i].get(t);
                 builder.append(fields[i].getName()).append(" string");
                 if (i != fields.length - 1) {
                     builder.append(", ");
@@ -42,7 +42,9 @@ public class DbUtil {
                     builder.append(")");
                 }
             }
-            statement.executeUpdate(builder.toString());
+            String sql = builder.toString();
+            LogUtils.println("createTable sql = " + sql);
+            statement.executeUpdate(sql);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,21 +61,26 @@ public class DbUtil {
         }
     }
 
+    private static <T> Field[] getFields(T t) {
+        if (t == null) {
+            return null;
+        }
+        Class clazz = t.getClass();
+        return clazz.getDeclaredFields();
+    }
+
     public static <T> void save(T t) {
         if (t == null) {
             return;
         }
+
+        StringBuilder insertSql = new StringBuilder();
+
         try {
             Class clazz = t.getClass();
             Field[] fields = clazz.getDeclaredFields();
 
             Statement statement = Db.getSM();
-
-            //先写着，以后再优化
-            int count = 0;//count((TongTongBean) t);
-            if (count > 0) {
-                return;
-            }
 
             StringBuilder names = new StringBuilder();
             names.append(" (");
@@ -82,10 +89,10 @@ public class DbUtil {
             values.append(" (");
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
-                String value = (String) fields[i].get(t);
-                if (value != null && !value.equals("null")) {
+                Object value = fields[i].get(t);
+                if (value != null && !value.equals("null") && !(value instanceof Iterable) && !(value instanceof Map)) {
                     names.append(fields[i].getName());
-                    values.append("'").append(value).append("'");
+                    values.append("'").append(value.toString().replace("'","''")).append("'");
                     if (i != fields.length - 1) {
                         names.append(",");
                         values.append(",");
@@ -96,13 +103,12 @@ public class DbUtil {
             names.append(")");
             values.append(")");
 
-            StringBuilder insertSql = new StringBuilder();
-
             insertSql.append("insert into ").append(clazz.getSimpleName()).append(" ").append(names.toString()).append(" values ").append(values.toString());
 
             statement.executeUpdate(insertSql.toString());
 
         } catch (Exception e) {
+            LogUtils.println("sql : " + insertSql.toString());
             e.printStackTrace();
         }
     }

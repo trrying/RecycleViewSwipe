@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ *
  * Created by owm on 2017/8/24.
  */
 
@@ -99,13 +100,34 @@ public class Product implements Serializable {
     public List<OnegoPayDiscountListBean> onegoPayDiscountList;
     public List<RowsBean> rows;
 
-    public String onegoPayDiscountName;
-    public String onegoPayDiscountDetailInfo;
+    public String onegoPayDiscountListJson;
+    public String rowsJson;
 
 
-    public String salesPrice;
-    public String salesPricePoint;
-    public String signOfPriceType;
+    /**
+     * signOfWed :
+     * salesPoint :
+     * isCanAutoRetu : 0
+     * nowDate : 2017-08-24 17:51:43
+     * salesBeginDate :
+     * merType : 西餐
+     * dist :
+     */
+
+    public String signOfWed;
+    public String salesPoint;
+    public String isCanAutoRetu;
+    public String nowDate;
+    public String salesBeginDate;
+    public String merType;
+    public String dist;
+
+    /**
+     * cityName : 北京
+     * cityNo : 10
+     */
+    public String cityName;
+    public String cityNo;
 
     public static class OnegoPayDiscountListBean implements Serializable {
         /**

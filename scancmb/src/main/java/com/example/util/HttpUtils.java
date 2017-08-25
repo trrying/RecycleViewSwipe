@@ -1,7 +1,6 @@
 package com.example.util;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -13,7 +12,7 @@ import java.net.URL;
  * Created by owm on 2017/7/1.
  */
 
-public class HttpUtil {
+public class HttpUtils {
 
     public static String get(String urlStr) {
         StringBuilder response = new StringBuilder();
@@ -33,7 +32,7 @@ public class HttpUtil {
             e.printStackTrace();
             System.out.println("失败! "+urlStr);
         } finally {
-            close(br);
+            CloseUtils.close(br);
         }
         return response.toString();
     }
@@ -62,6 +61,7 @@ public class HttpUtil {
             connection.setDoOutput(true);
             //设置为true后才能写入参数
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
             outputStream = connection.getOutputStream();
             outputStream.write(bodyParam.getBytes());
             outputStream.flush();
@@ -77,21 +77,9 @@ public class HttpUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally{
-            close(outputStream, inputStream);
+            CloseUtils.close(outputStream, inputStream);
         }
         return response.toString();
-    }
-
-    public static void close(Closeable... closeables) {
-        for (Closeable c : closeables) {
-            try {
-                if (c != null) {
-                    c.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
