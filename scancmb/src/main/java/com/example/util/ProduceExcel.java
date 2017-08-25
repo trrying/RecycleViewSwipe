@@ -43,6 +43,7 @@ public class ProduceExcel {
                 for (int i = 0; i < sheetSize; i++) {
                     WritableSheet sheet = workbook.createSheet("sheet"+(i+1), i);
                     addCell(list.subList(i * MAX_ROW, Math.min((i + 1) * MAX_ROW, list.size())), sheet, fields);
+                    System.out.println("i = " + i);
                 }
             } else {
                 WritableSheet sheet = workbook.createSheet("sheet1", 0);

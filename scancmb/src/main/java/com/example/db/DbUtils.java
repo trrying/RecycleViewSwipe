@@ -1,6 +1,7 @@
 package com.example.db;
 
 import com.example.util.LogUtils;
+import com.example.util.Utils;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -117,14 +118,17 @@ public class DbUtils {
         List<T> list = new ArrayList<>();
         try {
             Field[] fields = clazz.getDeclaredFields();
-            String selectSql = "select * from "+clazz.getSimpleName();
+            String selectSql = "select * from "+clazz.getSimpleName() + " order by cityNo";
             ResultSet resultSet = Db.getSM().executeQuery(selectSql);
 
             while (resultSet.next()) {
                 T bean = clazz.newInstance();
                 for (int i = 0; i < fields.length; i++) {
-                    fields[i].setAccessible(true);
                     String value = resultSet.getString(fields[i].getName());
+                    if (Utils.isEmpty(value)) {
+                        continue;
+                    }
+                    fields[i].setAccessible(true);
                     fields[i].set(bean, value);
                 }
                 list.add(bean);
