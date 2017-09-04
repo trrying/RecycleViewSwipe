@@ -70,6 +70,32 @@ public class DbUtils {
         return clazz.getDeclaredFields();
     }
 
+    public static <T> void deleteAndSave(T t, String keyName,String keyValue) {
+        if (t == null || Utils.isEmpty(keyName) || Utils.isEmpty(keyValue)) {
+            return;
+        }
+        delete(t, keyName, keyValue);
+        save(t);
+    }
+
+    public static <T> void delete(T t, String keyName,String keyValue) {
+        if (t == null || Utils.isEmpty(keyName) || Utils.isEmpty(keyValue)) {
+            return;
+        }
+        StringBuilder deleteSql = new StringBuilder();
+
+        try {
+            Class clazz = t.getClass();
+            Statement statement = Db.getSM();
+
+            deleteSql.append("delete from ").append(clazz.getSimpleName()).append(" where ").append(keyName).append(" = '").append(keyValue).append("'");
+
+            statement.executeUpdate(deleteSql.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static <T> void save(T t) {
         if (t == null) {
             return;
@@ -117,10 +143,10 @@ public class DbUtils {
     public static <T> List<T> findAll(Class<T> clazz) {
         List<T> list = new ArrayList<>();
         try {
-            Field[] fields = clazz.getDeclaredFields();
             String selectSql = "select * from "+clazz.getSimpleName() + " order by cityNo";
             ResultSet resultSet = Db.getSM().executeQuery(selectSql);
 
+            Field[] fields = clazz.getDeclaredFields();
             while (resultSet.next()) {
                 T bean = clazz.newInstance();
                 for (int i = 0; i < fields.length; i++) {
@@ -138,6 +164,63 @@ public class DbUtils {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public static <T> List<T> query(Class<T> clazz, String keyColumn,String keyValue) {
+        List<T> list = new ArrayList<>();
+        if (clazz == null || Utils.isEmpty(keyColumn) || Utils.isEmpty(keyValue)) {
+            return list;
+        }
+        try {
+            String selectSql = "select * from " + clazz.getSimpleName() + " where " + keyColumn + " = '" + keyValue + "'" + " order by cityNo";
+            ResultSet resultSet = Db.getSM().executeQuery(selectSql);
+
+            Field[] fields = clazz.getDeclaredFields();
+            while (resultSet.next()) {
+                T bean = clazz.newInstance();
+                for (int i = 0; i < fields.length; i++) {
+                    String value = resultSet.getString(fields[i].getName());
+                    if (Utils.isEmpty(value)) {
+                        continue;
+                    }
+                    fields[i].setAccessible(true);
+                    fields[i].set(bean, value);
+                }
+                list.add(bean);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static <T> boolean update(Class<T> clazz, String[] columns, Object[] values, String keyColumn,String keyValue) {
+        if (columns == null || columns.length <= 0 || values == null || values.length <= 0 || columns.length != values.length || clazz == null || Utils.isEmpty(keyColumn) || Utils.isEmpty(keyValue)) {
+            return false;
+        }
+        try {
+            StringBuilder updateSql = new StringBuilder();
+            updateSql.append("update product set ");
+            for (int i = 0; i < columns.length; i++) {
+                if (values[i] == null) {
+                    continue;
+                }
+                if (values[i] instanceof String) {
+                    values[i] = values[i].toString().replace("'","''");
+                }
+                updateSql.append(columns[i]).append(" = '").append(values[i]).append("'");
+                if (i != columns.length -1) {
+                    updateSql.append(",");
+                }
+            }
+            updateSql.append(" where ").append(keyColumn).append(" = '").append(keyValue).append("'");
+            Db.getSM().executeUpdate(updateSql.toString());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 //    public static int count(TongTongBean bean) {

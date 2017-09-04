@@ -10,5 +10,10 @@ public class Main {
 
         ProductUtils.createExcel();
 
+//        ProductUtils.getProductDetail();
+
+//        MerUtils.getProductMerTest();
+//        MerUtils.getProductMer();
+
     }
 }

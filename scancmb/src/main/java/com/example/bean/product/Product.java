@@ -122,6 +122,13 @@ public class Product implements Serializable {
     public String merType;
     public String dist;
 
+
+    /* 门店列表 */
+    public String merName;
+    public String totalRecords;
+    public String merListInfo;
+
+
     /**
      * cityName : 北京
      * cityNo : 10

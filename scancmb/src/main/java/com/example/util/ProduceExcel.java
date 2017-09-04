@@ -1,6 +1,8 @@
 package com.example.util;
 
 
+import com.example.bean.product.Product;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -72,4 +74,92 @@ public class ProduceExcel {
         }
     }
 
+    public static void product2Excel(List<Product> list, String excelFilePath) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        if (excelFilePath == null || excelFilePath.isEmpty()) {
+            excelFilePath = "default_"+System.currentTimeMillis()+".xls";
+        }
+        try {
+            File excelFile = new File(excelFilePath);
+            WritableWorkbook workbook = Workbook.createWorkbook(excelFile);
+            WritableSheet sheet = workbook.createSheet("sheet1", 0);
+            for (int i = 0; i < list.size(); i++) {
+                Product product = list.get(i);
+                int c = 0;
+                int r = i + 1;
+                sheet.addCell(new Label(c, r, product.cityName));
+                sheet.addCell(new Label(++c, r, product.productName));
+                sheet.addCell(new Label(++c, r, product.validityPerEnd));
+                sheet.addCell(new Label(++c, r, getSalesPrice(product)));
+                sheet.addCell(new Label(++c, r, product.totalRecords));
+                sheet.addCell(new Label(++c, r, getOneGoPay(product)));
+                sheet.addCell(new Label(++c, r, product.merName));
+                sheet.addCell(new Label(++c, r, product.merListInfo));
+            }
+
+            workbook.write();
+            workbook.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static String getOneGoPay(Product product) {
+        String result = "";
+        if (product != null && product.onegoPayDiscountList != null && product.onegoPayDiscountList.get(0) != null
+                && product.onegoPayDiscountList.get(0).onegoPayDiscountDetailInfo != null) {
+            result = product.onegoPayDiscountList.get(0).onegoPayDiscountDetailInfo;
+        }
+        return result;
+    }
+
+    public static String getSalesPrice(Product product) {
+        String result = "";
+        if (product != null && product.rows != null && product.rows.get(0) != null && product.rows.get(0).salesPrice != null) {
+            result = product.rows.get(0).salesPrice;
+        }
+        return result;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

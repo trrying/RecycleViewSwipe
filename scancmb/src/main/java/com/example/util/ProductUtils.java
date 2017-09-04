@@ -29,6 +29,7 @@ public class ProductUtils {
 
 
     private static final String detailPath = "E:\\work\\demo\\RecycleViewSwipe\\scancmb\\detail\\";
+    private static final String detailFailPath = "E:\\work\\demo\\RecycleViewSwipe\\scancmb\\detail\\failList\\";
 
     public static void getProductList() {
         List<City> cityList = CityUtils.getCityList();
@@ -87,30 +88,37 @@ public class ProductUtils {
 
     }
 
-    public static void changeData2DbData(List<Product> data) {
+    private static void changeData2DbData(Product product) {
+        if (product == null) {
+            return;
+        }
         Gson gson = new Gson();
-        for (Product product : data) {
-            if (product == null) {
-                continue;
+        if (product.rows != null && product.rows.size() != 0) {
+            try {
+                product.rowsJson = gson.toJson(product.rows);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (product.rows != null && product.rows.size() != 0) {
-                try {
-                    product.rowsJson = gson.toJson(product.rows);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (product.onegoPayDiscountList != null && product.onegoPayDiscountList.size() != 0) {
-                try {
-                    product.onegoPayDiscountListJson = gson.toJson(product.onegoPayDiscountList);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        }
+        if (product.onegoPayDiscountList != null && product.onegoPayDiscountList.size() != 0) {
+            try {
+                product.onegoPayDiscountListJson = gson.toJson(product.onegoPayDiscountList);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public static void changeData2NormalData(List<Product> data) {
+    private static void changeData2DbData(List<Product> data) {
+        if (data == null) {
+            return;
+        }
+        for (Product product : data) {
+            changeData2DbData(product);
+        }
+    }
+
+    private static void changeDbData2NormalData(List<Product> data) {
         if (checkDataEmpty(data)) {
             return;
         }
@@ -122,6 +130,7 @@ public class ProductUtils {
             if (!Utils.isEmpty(product.rowsJson)) {
                 try {
                     product.rows = gson.fromJson(product.rowsJson, new TypeToken<List<Product.RowsBean>>(){}.getType());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -136,7 +145,7 @@ public class ProductUtils {
         }
     }
 
-    public static boolean checkProductEmpty(ProductListResult productListResult) {
+    private static boolean checkProductEmpty(ProductListResult productListResult) {
         if (productListResult == null) {
             LogUtils.println("productListResult is null");
             return true;
@@ -148,7 +157,7 @@ public class ProductUtils {
         return checkDataEmpty(productListResult.body.rows);
     }
 
-    public static boolean checkDataEmpty(List<Product> data) {
+    private static boolean checkDataEmpty(List<Product> data) {
         if (data == null) {
             LogUtils.println("changeData2Db param data == null");
             return true;
@@ -160,7 +169,7 @@ public class ProductUtils {
         return false;
     }
 
-    public static void addCityInfo(List<Product> data, City city) {
+    private static void addCityInfo(List<Product> data, City city) {
         if (checkDataEmpty(data)) {
             return;
         }
@@ -173,6 +182,13 @@ public class ProductUtils {
         }
     }
 
+    public static void getProductDetail1() {
+        List<Product> productList = DbUtils.query(Product.class, "productNo", "9917063000870");
+
+        new Thread(new GetProductDetail(productList, 1)).start();
+    }
+
+
     public static void getProductDetail() {
 
         List<Product> productList = DbUtils.findAll(Product.class);
@@ -180,7 +196,6 @@ public class ProductUtils {
         int threadNum = 10;
 
         int threadProductCount = productList.size() / threadNum + 1;
-        List<List<Product>> data = new ArrayList();
         for (int i = 0; i < threadNum; i++) {
             int begin = i * threadProductCount;
             int end = (i+1) * threadProductCount;
@@ -188,13 +203,9 @@ public class ProductUtils {
             if (begin >= end) {
                 break;
             }
-            data.add(productList.subList(begin, end));
+            List<Product> products = productList.subList(begin, end);
+            new Thread(new GetProductDetail(products, i)).start();
         }
-
-        for (int i = 0; i < data.size(); i++) {
-            new Thread().start();
-        }
-
         LogUtils.println("size = "+productList.size());
     }
 
@@ -202,8 +213,11 @@ public class ProductUtils {
         public static List<String> failProductNo = new ArrayList();
         private List<Product> data;
 
-        public GetProductDetail(List<Product> data) {
+        private int position;
+
+        public GetProductDetail(List<Product> data, int position) {
             this.data = data;
+            this.position = position;
         }
 
         @Override
@@ -211,40 +225,80 @@ public class ProductUtils {
             Gson gson = new Gson();
 
             for (int i = 0; i < data.size(); i++) {
+
                 Product product = data.get(i);
-                if (product == null || Utils.isEmpty(product.productNo)) {
-                    continue;
+                try {
+                    StringBuilder builder = new StringBuilder();
+                    if (product == null || Utils.isEmpty(product.productNo)) {
+                        continue;
+                    }
+                    builder.append("----------------- " + "position : ").append(position).append(" productNo : ").append(product.productNo).append(" -------------------");
+                    String bodyParam = String.format(Locale.getDefault(), productDetailParam, product.cityNo, product.productNo);
+
+                    String response = HttpUtils.post(productListUrl, bodyParam);
+
+                    if (Utils.isEmpty(response)) {
+                        builder.append("cityNo : ").append(product.cityNo).append(" productNo : ").append(product.productNo).append("  response is empty");
+                        failProductNo.add(product.productNo);
+                        continue;
+                    }
+
+                    String filePath = detailPath + product.cityNo + "_" + product.productNo + ".txt";
+                    boolean saveFile = FileUtils.saveFile(filePath, response);
+                    if (!saveFile) {
+                        builder.append("save file error filePath : ").append(filePath);
+                    }
+
+                    ProductResult productResult = gson.fromJson(response, ProductResult.class);
+
+                    if (checkProductResult(productResult)) {
+                        Product body = productResult.body;
+
+                        product.merOnegoType = body.merOnegoType;
+                        product.strNo = body.strNo;
+                        product.rushBeginTime = body.rushBeginTime;
+                        product.recommend = body.recommend;
+                        product.signOfRushToday = body.signOfRushToday;
+                        product.rushEndTime = body.rushEndTime;
+                        product.distance = body.distance;
+                        product.stock = body.stock;
+                        product.isCanAutoReturn = body.isCanAutoReturn;
+                        product.servicePhone = body.servicePhone;
+                        product.longitude = body.longitude;
+                        product.merNo = body.merNo;
+                        product.onegoPayDiscountList = body.onegoPayDiscountList;
+                    }
+                    changeData2DbData(product);
+                    DbUtils.deleteAndSave(product, "productNo", product.productNo);
+                    builder.append("\nend");
+                    LogUtils.println(builder.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (product != null) {
+                        failProductNo.add(product.productNo);
+                    }
                 }
-                String bodyParam = String.format(Locale.getDefault(), productDetailParam, product.cityNo, product.productNo);
-
-                String response = HttpUtils.post(productListUrl, bodyParam);
-
-                if (Utils.isEmpty(response)) {
-                    LogUtils.println("cityNo : " + product.cityNo + " productNo : " + product.productNo + "  response is empty");
-                    failProductNo.add(product.productNo);
-                    continue;
-                }
-
-                String filePath = detailPath + product.cityNo + "_" + product.productNo + ".txt";
-                boolean saveFile = FileUtils.saveFile(filePath, response);
-                if (!saveFile) {
-                    LogUtils.println("save file error filePath : " + filePath);
-                }
-
-                ProductResult productResult = gson.fromJson(response, ProductResult.class);
-
-
 
             }
+
+            String failProductNoInfo = "Thread position : " + position + "  failProductNo : " + gson.toJson(failProductNo);
+            FileUtils.saveFile(detailFailPath+"failInfo.txt", failProductNoInfo);
+
         }
 
+    }
+
+    public static boolean checkProductResult(ProductResult productResult) {
+        return productResult != null && productResult.body != null;
     }
 
     public static void createExcel() {
 
         List<Product> productList = DbUtils.findAll(Product.class);
 
-        ProduceExcel.list2Excel(productList, "");
+        changeDbData2NormalData(productList);
+
+        ProduceExcel.product2Excel(productList, "");
 
     }
 
