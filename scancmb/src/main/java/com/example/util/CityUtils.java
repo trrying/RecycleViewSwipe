@@ -1,8 +1,8 @@
 package com.example.util;
 
-import com.example.bean.city.City;
-import com.example.bean.city.CityList;
-import com.example.bean.city.CityResult;
+import com.example.bean.cmb.city.City;
+import com.example.bean.cmb.city.CityList;
+import com.example.bean.cmb.city.CityResult;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;

@@ -1,8 +1,8 @@
 package com.example.util;
 
-import com.example.bean.product.Mer;
-import com.example.bean.product.MerResult;
-import com.example.bean.product.Product;
+import com.example.bean.cmb.product.Mer;
+import com.example.bean.cmb.product.MerResult;
+import com.example.bean.cmb.product.Product;
 import com.example.db.DbUtils;
 import com.google.gson.Gson;
 

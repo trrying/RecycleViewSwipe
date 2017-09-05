@@ -1,4 +1,4 @@
-package com.example.bean.product;
+package com.example.bean.cmb.product;
 
 import java.io.Serializable;
 import java.util.List;

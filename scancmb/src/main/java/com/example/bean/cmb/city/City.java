@@ -1,4 +1,4 @@
-package com.example.bean.city;
+package com.example.bean.cmb.city;
 
 import java.io.Serializable;
 

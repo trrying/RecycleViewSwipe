@@ -1,9 +1,9 @@
 package com.example.util;
 
-import com.example.bean.city.City;
-import com.example.bean.product.Product;
-import com.example.bean.product.ProductListResult;
-import com.example.bean.product.ProductResult;
+import com.example.bean.cmb.city.City;
+import com.example.bean.cmb.product.Product;
+import com.example.bean.cmb.product.ProductListResult;
+import com.example.bean.cmb.product.ProductResult;
 import com.example.db.DbUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

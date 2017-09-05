@@ -1,7 +1,7 @@
 package com.example.util;
 
 
-import com.example.bean.product.Product;
+import com.example.bean.cmb.product.Product;
 
 import java.io.File;
 import java.lang.reflect.Field;
