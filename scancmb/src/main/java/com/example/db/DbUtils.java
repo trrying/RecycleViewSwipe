@@ -25,7 +25,7 @@ public class DbUtils {
             Class.forName("org.sqlite.JDBC");
             Field[] fields = clazz.getDeclaredFields();
 
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:simple.db");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:feifan.db");
 
             Statement statement = connection.createStatement();
 
@@ -53,13 +53,15 @@ public class DbUtils {
         return false;
     }
 
-    public static <T> void save(List<T> list) {
+    public static <T> int save(List<T> list) {
+        int result = 0;
         if (list == null || list.isEmpty()) {
-            return;
+            return result;
         }
-        for (T t : list) {
-            save(t);
+        for (int i = 0; i < list.size(); i++) {
+            result = result + save(list.get(i));
         }
+        return result;
     }
 
     private static <T> Field[] getFields(T t) {
@@ -96,9 +98,10 @@ public class DbUtils {
         }
     }
 
-    public static <T> void save(T t) {
+    public static <T> int save(T t) {
+        int result = 0;
         if (t == null) {
-            return;
+            return result;
         }
 
         StringBuilder insertSql = new StringBuilder();
@@ -120,30 +123,33 @@ public class DbUtils {
                 if (value != null && !value.equals("null") && !(value instanceof Iterable) && !(value instanceof Map)) {
                     names.append(fields[i].getName());
                     values.append("'").append(value.toString().replace("'","''")).append("'");
-                    if (i != fields.length - 1) {
-                        names.append(",");
-                        values.append(",");
-                    }
+                    names.append(",");
+                    values.append(",");
                 }
             }
-
+            if (names.charAt(names.length()-1) == 44) {
+                names.deleteCharAt(names.length()-1);
+            }
+            if (values.charAt(values.length()-1) == 44) {
+                values.deleteCharAt(values.length()-1);
+            }
             names.append(")");
             values.append(")");
 
             insertSql.append("insert into ").append(clazz.getSimpleName()).append(" ").append(names.toString()).append(" values ").append(values.toString());
 
-            statement.executeUpdate(insertSql.toString());
-
+            result = statement.executeUpdate(insertSql.toString());
         } catch (Exception e) {
             LogUtils.println("sql : " + insertSql.toString());
             e.printStackTrace();
         }
+        return result;
     }
 
     public static <T> List<T> findAll(Class<T> clazz) {
         List<T> list = new ArrayList<>();
         try {
-            String selectSql = "select * from "+clazz.getSimpleName() + " order by cityNo";
+            String selectSql = "select * from "+clazz.getSimpleName();
             ResultSet resultSet = Db.getSM().executeQuery(selectSql);
 
             Field[] fields = clazz.getDeclaredFields();

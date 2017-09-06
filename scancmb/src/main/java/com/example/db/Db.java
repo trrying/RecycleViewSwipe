@@ -14,8 +14,9 @@ public class Db {
 
     public static final String DB_CLASS_NAME = "org.sqlite.JDBC";
 
-    public static final String DB_NAME = "simple.db";
 //    public static final String DB_NAME = "test.db";
+//    public static final String DB_NAME = "simple.db";
+    public static final String DB_NAME = "feifan.db";
 
     public static final String DB_PATH = "jdbc:sqlite:" + DB_NAME;
 
