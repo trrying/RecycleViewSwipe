@@ -149,7 +149,7 @@ public class DbUtils {
     public static <T> List<T> findAll(Class<T> clazz) {
         List<T> list = new ArrayList<>();
         try {
-            String selectSql = "select * from "+clazz.getSimpleName();
+            String selectSql = "select * from "+clazz.getSimpleName()+" order by cityId,plazaId";
             ResultSet resultSet = Db.getSM().executeQuery(selectSql);
 
             Field[] fields = clazz.getDeclaredFields();

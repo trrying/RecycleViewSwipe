@@ -7,11 +7,13 @@ import com.example.db.DbUtils;
 import com.example.util.FileUtils;
 import com.example.util.HttpUtils;
 import com.example.util.LogUtils;
+import com.example.util.ProduceExcel;
 import com.example.util.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  *
@@ -24,7 +26,7 @@ public class CouponsUtils {
     private static final String basePath = "E:\\work\\demo\\RecycleViewSwipe\\scancmb\\response\\feifan\\CouponList\\";
     
     public static void main(String[] args) {
-        getCoupons();
+//        getCoupons();
 
 //        String sql = "insert into Coupons  (cityId,marketPrice,pic,endDate,saleNum,startDate,id,title,price,sortValue,subtitle,oriPrice,plazaId,plazaName,poiLong,plazaLongitude,poiLat,plazaLatitude,soldNum) values  ('310100','1','T12mATBQK_1RCvBVdK','2018.01.31','9','2017.09.05','20170104203523','巴蒂娜部分服装5折起','0','-1','精美服饰，让你美丽一夏','1','310100','','','','','','9')";
 //        Statement statement = Db.getSM();
@@ -35,6 +37,8 @@ public class CouponsUtils {
 //            e.printStackTrace();
 //        }
 //        System.out.println("result : "+result);
+
+        productExcel();
     }
     
     public static void getCouponsTest() {
@@ -130,6 +134,23 @@ public class CouponsUtils {
             }
         }
 
+    }
+
+
+    public static void productExcel() {
+
+        Map<String, String> cityMap = CityUtils.getCityMap();
+
+        List<Coupons> couponsList = DbUtils.findAll(Coupons.class);
+
+        for (int i = 0; i < couponsList.size(); i++) {
+            Coupons coupons = couponsList.get(i);
+            if (coupons != null && coupons.cityId != null) {
+                coupons.cityName = cityMap.get(coupons.cityId);
+            }
+        }
+
+        ProduceExcel.list2Excel(couponsList);
     }
 
 }

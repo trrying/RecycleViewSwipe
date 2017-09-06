@@ -28,14 +28,15 @@ public class Activities implements Serializable {
      */
 
     public String cityId;
+    public String cityName;
     public String startDate;
     public String id;
-    public double distance;
+    public String distance;
     public String title;
     public String description;
     public String subtitle;
-    public double sortValue;
-    public int plazaId;
+    public String sortValue;
+    public String plazaId;
     public String plazaName;
     public String poiLong;
     public String plazaLongitude;

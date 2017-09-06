@@ -6,7 +6,9 @@ import com.example.util.FileUtils;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,8 +28,18 @@ public class CityUtils {
         return cityList;
     }
 
+    public static Map<String, String> getCityMap() {
+        List<City> cityList = getCityList();
+        Map<String, String> cityMap = new HashMap<>();
+        for (int i = 0; i < cityList.size(); i++) {
+            cityMap.put(cityList.get(i).cityId, cityList.get(i).cityName);
+        }
+        return cityMap;
+    }
+
     public static void main(String[] args) {
-        getCityList();
+//        getCityList();
+        getCityMap();
     }
 
 

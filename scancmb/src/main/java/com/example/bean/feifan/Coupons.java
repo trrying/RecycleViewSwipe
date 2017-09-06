@@ -32,6 +32,7 @@ public class Coupons implements Serializable{
      */
 
     public String cityId;
+    public String cityName;
     public String marketPrice;
     public String pic;
     public String endDate;

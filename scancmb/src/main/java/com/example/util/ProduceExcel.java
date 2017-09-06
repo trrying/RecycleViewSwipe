@@ -24,6 +24,10 @@ public class ProduceExcel {
      */
     public static final int MAX_ROW = 50 * 1000;
 
+    public static <T> void list2Excel(List<T> list) {
+        list2Excel(list, "");
+    }
+
     public static <T> void list2Excel(List<T> list, String excelFilePath) {
         if (list == null || list.isEmpty()) {
             return;

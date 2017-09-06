@@ -1,16 +1,19 @@
 package com.example.util.feifan;
 
+import com.example.bean.feifan.Activities;
 import com.example.bean.feifan.ActivitiesResult;
 import com.example.bean.feifan.Plaza;
 import com.example.db.DbUtils;
 import com.example.util.FileUtils;
 import com.example.util.HttpUtils;
 import com.example.util.LogUtils;
+import com.example.util.ProduceExcel;
 import com.example.util.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  *
@@ -22,6 +25,11 @@ public class ActivitiesUtils {
     private static final String listUrl = "https://api.ffan.com/ffan/v1/city/activities?size=%s&offset=%s&plazaId=%s&cityId=%s";
 
     private static final String basePath = "E:\\work\\demo\\RecycleViewSwipe\\scancmb\\response\\feifan\\CouponList\\";
+
+    public static void main(String[] args) {
+//        getActivities();
+        productExcel();
+    }
 
     public static void getActivities() {
         List<Plaza> plazaList = DbUtils.findAll(Plaza.class);
@@ -84,6 +92,13 @@ public class ActivitiesUtils {
 
                         ActivitiesResult result = gson.fromJson(response, ActivitiesResult.class);
                         if (result != null && result.data != null && result.data.list != null) {
+
+                            for (int j = 0; j < result.data.list.size(); j++) {
+                                Activities coupons = result.data.list.get(j);
+                                coupons.plazaId = plaza.plazaId;
+                                coupons.plazaName = plaza.plazaName;
+                            }
+
                             total = result.data.list.size();
                             int count = DbUtils.save(result.data.list);
                             log.append("save db success list.size : ").append(result.data.list.size()).append("  db size = ").append(count).append("\n");
@@ -101,6 +116,21 @@ public class ActivitiesUtils {
             }
         }
 
+    }
+    public static void productExcel() {
+
+        Map<String, String> cityMap = CityUtils.getCityMap();
+
+        List<Activities> couponsList = DbUtils.findAll(Activities.class);
+
+        for (int i = 0; i < couponsList.size(); i++) {
+            Activities coupons = couponsList.get(i);
+            if (coupons != null && coupons.cityId != null) {
+                coupons.cityName = cityMap.get(coupons.cityId);
+            }
+        }
+
+        ProduceExcel.list2Excel(couponsList);
     }
 
 }
