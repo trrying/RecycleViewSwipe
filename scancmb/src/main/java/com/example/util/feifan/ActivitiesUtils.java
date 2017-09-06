@@ -119,18 +119,24 @@ public class ActivitiesUtils {
     }
     public static void productExcel() {
 
+        String logo = "https://timg.ffan.com/convert/resize/url_%s/width_284/height_160/tfs/xxx.webp";
+
+        String detailUrl = "https://h5.ffan.com/app/activity?plazaId=%s&cityId=%s&aid=%s";
+
         Map<String, String> cityMap = CityUtils.getCityMap();
 
-        List<Activities> couponsList = DbUtils.findAll(Activities.class);
+        List<Activities> activitiesList = DbUtils.findAll(Activities.class);
 
-        for (int i = 0; i < couponsList.size(); i++) {
-            Activities coupons = couponsList.get(i);
-            if (coupons != null && coupons.cityId != null) {
-                coupons.cityName = cityMap.get(coupons.cityId);
+        for (int i = 0; i < activitiesList.size(); i++) {
+            Activities activities = activitiesList.get(i);
+            if (activities != null && activities.cityId != null) {
+                activities.cityName = cityMap.get(activities.cityId);
+                activities.logo = String.format(Locale.getDefault(), logo, activities.pic);
+                activities.detail_url = String.format(Locale.getDefault(), detailUrl, activities.plazaId, activities.cityId, activities.id);
             }
         }
 
-        ProduceExcel.list2Excel(couponsList);
+        ProduceExcel.list2Excel(activitiesList);
     }
 
 }

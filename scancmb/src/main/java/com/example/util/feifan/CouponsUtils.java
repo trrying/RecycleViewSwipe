@@ -139,6 +139,10 @@ public class CouponsUtils {
 
     public static void productExcel() {
 
+        String logo = "https://timg.ffan.com/convert/resize/url_%s/width_284/height_160/tfs/xxx.webp";
+
+        String detailUrl = "http://m.ffan.com/#/detail/coupon/%s?cityId=%s&plazaId=%s";
+
         Map<String, String> cityMap = CityUtils.getCityMap();
 
         List<Coupons> couponsList = DbUtils.findAll(Coupons.class);
@@ -147,6 +151,8 @@ public class CouponsUtils {
             Coupons coupons = couponsList.get(i);
             if (coupons != null && coupons.cityId != null) {
                 coupons.cityName = cityMap.get(coupons.cityId);
+                coupons.logo = String.format(Locale.getDefault(), logo, coupons.pic);
+                coupons.detail_url = String.format(Locale.getDefault(), detailUrl, coupons.id, coupons.cityId, coupons.plazaId);
             }
         }
 

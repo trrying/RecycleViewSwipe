@@ -44,4 +44,7 @@ public class Activities implements Serializable {
     public String plazaLatitude;
     public String pic;
     public String endDate;
+
+    public String logo;
+    public String detail_url;
 }

@@ -52,4 +52,7 @@ public class Coupons implements Serializable{
     public String poiLat;
     public String plazaLatitude;
     public String soldNum;
+
+    public String logo;
+    public String detail_url;
 }
