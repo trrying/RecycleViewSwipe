@@ -1,1 +1,1 @@
-include ':app', ':recyclerfastadapterlib', ':recyclerviewswipelib', ':depreciate', ':clear', ':led', ':scancmb'
+include ':app', ':recyclerfastadapterlib', ':recyclerviewswipelib', ':depreciate', ':clear', ':led', ':scancmb', ':findimg'
