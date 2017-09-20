@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import java.io.IOException;
 
 /**
+ *
  * Created by owm on 2017/9/19.
  */
 
@@ -18,7 +19,7 @@ public class FindImgUtils {
      * @return
      * @throws IOException
      */
-    private static boolean FindImg(String mubiao, String yuantu) throws IOException {
+    public static boolean FindImg(String mubiao, String yuantu) throws IOException {
         boolean isFind = false;
         Bitmap yuantusource = BitmapFactory.decodeFile(yuantu, null);
         Bitmap mubiaosource = BitmapFactory.decodeFile(mubiao, null);

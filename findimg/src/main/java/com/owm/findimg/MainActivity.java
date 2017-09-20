@@ -1,6 +1,8 @@
 package com.owm.findimg;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,15 +29,43 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RootCmd.execRootCmd("sleep 0.1 && input keyevent " + KeyEvent.KEYCODE_HOME);
-                for (int i = 0; i < 3; i++) {
-                    RootCmd.execRootCmd("sleep 0.1 && input swipe 100 100 300 100");
-                }
-                for (int i = 0; i < 3; i++) {
-                    RootCmd.execRootCmd("sleep 0.1 && input swipe 300 100 100 100");
-                }
+                testFindImage();
             }
         });
+    }
+
+    public void testFindImage() {
+        String dirPath = Environment.getExternalStorageDirectory() + "/apk/find/";
+        String mubiao = dirPath + "guai_1.jpg";
+        String yuantu = dirPath + "map_9_34_33.jpg";
+        try {
+            Boolean isBelong = FindImgUtils.FindImg(mubiao, yuantu);
+            System.out.println("isBelong --> " + isBelong);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testFindImage1() {
+        String dirPath = Environment.getExternalStorageDirectory() + "/apk/find/";
+        String mubiao = dirPath + "kuan_1.jpg";
+        String yuantu = dirPath + "map_9_34_33.jpg";
+        try {
+            Boolean isBelong = FindImgUtils.FindImg(mubiao, yuantu);
+            System.out.println("isBelong --> " + isBelong);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void swipe() {
+        RootCmd.execRootCmd("sleep 0.1 && input keyevent " + KeyEvent.KEYCODE_HOME);
+        for (int i = 0; i < 3; i++) {
+            RootCmd.execRootCmd("sleep 0.1 && input swipe 100 100 300 100");
+        }
+        for (int i = 0; i < 3; i++) {
+            RootCmd.execRootCmd("sleep 0.1 && input swipe 300 100 100 100");
+        }
     }
 
     @Override
@@ -50,9 +84,19 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+//            testFindImage1();
+            startCheckAccissibility();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void startCheckAccissibility(){
+        Intent intent = new Intent(this, AccessibilityMonitorService.class);
+        startService(intent);
+    }
+
+
 }
