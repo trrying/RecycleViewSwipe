@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +23,13 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                RootCmd.execRootCmd("sleep 0.1 && input keyevent " + KeyEvent.KEYCODE_HOME);
+                for (int i = 0; i < 3; i++) {
+                    RootCmd.execRootCmd("sleep 0.1 && input swipe 100 100 300 100");
+                }
+                for (int i = 0; i < 3; i++) {
+                    RootCmd.execRootCmd("sleep 0.1 && input swipe 300 100 100 100");
+                }
             }
         });
     }
